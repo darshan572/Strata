@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SylvaSearch | Strata Search Engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-base: #090d16;
+      --bg-surface: #101626;
+      --bg-card: rgba(22, 30, 49, 0.75);
+      --bg-glass: rgba(255, 255, 255, 0.03);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-glow: rgba(56, 189, 248, 0.35);
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --accent-cyan: #38bdf8;
+      --accent-cyan-glow: rgba(56, 189, 248, 0.25);
+      --accent-violet: #818cf8;
+      --accent-emerald: #34d399;
+      --accent-amber: #fbbf24;
+      --accent-rose: #fb7185;
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: radial-gradient(circle at 50% 0%, #151e36 0%, var(--bg-base) 65%);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Top Navigation */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(16px);
+      background: rgba(9, 13, 22, 0.85);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.85rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0ea5e9, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+    }
+
+    .brand-logo svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2.2;
+    }
+
+    .brand-name {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-badge {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.15rem 0.5rem;
+      border-radius: 20px;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      font-family: var(--font-mono);
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.4rem;
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.3rem;
+      border-radius: 12px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .nav-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.45rem 1rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-tab-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .nav-tab-btn.active {
+      color: #fff;
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(99, 102, 241, 0.25));
+      border: 1px solid rgba(56, 189, 248, 0.4);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      color: var(--accent-emerald);
+      background: rgba(52, 211, 153, 0.08);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+      padding: 0.35rem 0.75rem;
+      border-radius: 20px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-emerald);
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .docs-btn {
+      text-decoration: none;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid var(--border-subtle);
+      padding: 0.4rem 0.85rem;
+      border-radius: 8px;
+      transition: var(--transition);
+    }
+
+    .docs-btn:hover {
+      color: var(--text-main);
+      border-color: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    /* Main Container */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem 5rem;
+    }
+
+    /* Tab Panes */
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* SEARCH SECTION */
+    .search-hero {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-title {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.75rem;
+      background: linear-gradient(135deg, #ffffff 30%, #7dd3fc 80%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+      max-width: 600px;
+      margin: 0 auto 1.75rem;
+    }
+
+    .search-bar-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .search-box {
+      width: 100%;
+      background: rgba(18, 25, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(20px);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem 3.8rem 1.1rem 3.4rem;
+      color: #fff;
+      font-size: 1.1rem;
+      font-family: inherit;
+      outline: none;
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      transition: var(--transition);
+    }
+
+    .search-box:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 12px 35px -8px rgba(56, 189, 248, 0.25), 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .search-icon-left {
+      position: absolute;
+      left: 1.25rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+      stroke: var(--text-faint);
+      fill: none;
+      pointer-events: none;
+    }
+
+    .search-action-right {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .search-submit-btn {
+      background: linear-gradient(135deg, #0284c7, #4f46e5);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .search-submit-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 16px rgba(56, 189, 248, 0.5);
+    }
+
+    .search-submit-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: white;
+      stroke-width: 2.2;
+    }
+
+    /* Sample Queries */
+    .sample-queries {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1.15rem;
+    }
+
+    .sample-label {
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .sample-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-mono);
+    }
+
+    .sample-pill:hover {
+      background: rgba(56, 189, 248, 0.1);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: var(--accent-cyan);
+      transform: translateY(-1px);
+    }
+
+    /* Search Results */
+    .results-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border-subtle);
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .results-count span {
+      color: var(--accent-cyan);
+      font-weight: 700;
+    }
+
+    .results-time {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--text-faint);
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.4rem;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-violet));
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .result-card:hover {
+      border-color: rgba(56, 189, 248, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    .result-card:hover::before {
+      opacity: 1;
+    }
+
+    .result-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .result-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      transition: var(--transition);
+    }
+
+    .result-title:hover {
+      color: var(--accent-cyan);
+    }
+
+    .result-title svg {
+      width: 14px;
+      height: 14px;
+      stroke: var(--text-muted);
+      fill: none;
+    }
+
+    .score-badge {
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      font-weight: 700;
+      background: rgba(56, 189, 248, 0.12);
+      color: var(--accent-cyan);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 0.2rem 0.55rem;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .result-url {
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: var(--accent-emerald);
+      text-decoration: none;
+      margin-bottom: 0.65rem;
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .result-url:hover {
+      text-decoration: underline;
+    }
+
+    .result-snippet {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .result-snippet mark {
+      background: rgba(56, 189, 248, 0.25);
+      color: #fff;
+      font-weight: 600;
+      padding: 0.05rem 0.3rem;
+      border-radius: 4px;
+    }
+
+    .result-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+    }
+
+    .metric-pill {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      padding: 0.2rem 0.5rem;
+      border-radius: 6px;
+      color: var(--text-faint);
+    }
+
+    .metric-pill strong {
+      color: var(--text-main);
+    }
+
+    /* GRID LAYOUTS FOR METRICS & CONTROL */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card-title {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-card-value {
+      font-size: 2.1rem;
+      font-weight: 800;
+      color: #fff;
+      font-family: var(--font-mono);
+      letter-spacing: -0.02em;
+    }
+
+    .stat-card-sub {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+    }
+
+    /* Panel section */
+    .panel-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.75rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+
+    .panel-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    /* Tables */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--border-subtle);
+      font-family: var(--font-mono);
+    }
+
+    .data-table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+    }
+
+    .data-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .input-field {
+      width: 100%;
+      background: rgba(9, 13, 22, 0.7);
+      border: 1px solid var(--border-subtle);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .input-field:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.15);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #0284c7, #4f46e5);
+      border: none;
+      color: white;
+      padding: 0.75rem 1.4rem;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.92rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 18px rgba(56, 189, 248, 0.35);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-main);
+      padding: 0.65rem 1.1rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Code block */
+    pre.code-viewer {
+      background: #080c14;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 1.15rem;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      color: #cbd5e1;
+      overflow-x: auto;
+      max-height: 400px;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      color: var(--text-faint);
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      stroke: var(--text-faint);
+      fill: none;
+      margin-bottom: 1rem;
+    }
+
+    /* Toast Notification */
+    #toast-container {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .toast {
+      background: rgba(18, 25, 42, 0.95);
+      border: 1px solid var(--border-glow);
+      backdrop-filter: blur(12px);
+      padding: 0.85rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      animation: slideIn 0.25s ease-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation Header -->
+  <header>
+    <a href="#" class="brand" id="brand-link">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </div>
+      <div>
+        <div style="display:flex; align-items:center; gap:0.5rem;">
+          <span class="brand-name">Strata Engine</span>
+          <span class="brand-badge">SylvaSearch v0.3.0</span>
+        </div>
+      </div>
+    </a>
+
+    <div class="nav-tabs">
+      <button class="nav-tab-btn active" data-tab="search-tab" id="nav-search">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Search
+      </button>
+      <button class="nav-tab-btn" data-tab="frontier-tab" id="nav-frontier">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Crawler & Frontier
+      </button>
+      <button class="nav-tab-btn" data-tab="pagerank-tab" id="nav-pagerank">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+        PageRank
+      </button>
+      <button class="nav-tab-btn" data-tab="corpus-tab" id="nav-corpus">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Corpus & Terms
+      </button>
+    </div>
+
+    <div class="header-actions">
+      <div class="status-indicator" id="system-status">
+        <span class="status-dot"></span>
+        <span id="indexed-docs-badge">185 Docs Indexed</span>
+      </div>
+      <a href="/docs" target="_blank" class="docs-btn" id="api-docs-link">Swagger API</a>
+    </div>
+  </header>
+
+  <main>
+    <!-- TAB 1: SEARCH INTERFACE -->
+    <section id="search-tab" class="tab-content active">
+      <div class="search-hero">
+        <h1 class="hero-title">High-Precision Web Search</h1>
+        <p class="hero-subtitle">Dual-signal BM25 lexical ranking combined with iterative PageRank graph authority scoring.</p>
+        
+        <div class="search-bar-wrapper">
+          <svg class="search-icon-left" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input 
+            type="text" 
+            id="query-input" 
+            class="search-box" 
+            placeholder="Search indexed corpus (e.g. 'python documentation', 'machine learning')..." 
+            autocomplete="off"
+            autofocus
+          >
+          <div class="search-action-right">
+            <button id="search-button" class="search-submit-btn" title="Search">
+              <svg viewBox="0 0 24 24">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="sample-queries">
+          <span class="sample-label">Try benchmarks:</span>
+          <button class="sample-pill" data-query="python downloads">python downloads</button>
+          <button class="sample-pill" data-query="python documentation">python documentation</button>
+          <button class="sample-pill" data-query="python beginner getting started">python beginner</button>
+          <button class="sample-pill" data-query="python events conferences">events</button>
+          <button class="sample-pill" data-query="machine learning python">machine learning</button>
+        </div>
+      </div>
+
+      <!-- Results Container -->
+      <div id="results-area" style="display: none;">
+        <div class="results-meta">
+          <div class="results-count" id="results-count-text">Found <span>0</span> documents</div>
+          <div class="results-time" id="results-latency">Execution: 0 ms</div>
+        </div>
+
+        <div class="results-list" id="results-container">
+          <!-- Dynamic Cards Inserted Here -->
+        </div>
+      </div>
+
+      <div id="search-empty-state" class="empty-state">
+        <svg viewBox="0 0 24 24">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <p>Type any keyword or click a query above to test the BM25 + PageRank retrieval engine.</p>
+      </div>
+    </section>
+
+    <!-- TAB 2: CRAWLER & FRONTIER -->
+    <section id="frontier-tab" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <span class="stat-card-title">Queue Status</span>
+          <span class="stat-card-value" id="stat-pending" style="color: var(--accent-amber);">-</span>
+          <span class="stat-card-sub">Pending crawl jobs</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-title">In Progress</span>
+          <span class="stat-card-value" id="stat-processing" style="color: var(--accent-cyan);">-</span>
+          <span class="stat-card-sub">Currently claiming/fetching</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-title">Successfully Crawled</span>
+          <span class="stat-card-value" id="stat-crawled" style="color: var(--accent-emerald);">-</span>
+          <span class="stat-card-sub">Pages processed & persisted</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-title">Failed / Disallowed</span>
+          <span class="stat-card-value" id="stat-failed" style="color: var(--accent-rose);">-</span>
+          <span class="stat-card-sub">Robots / Network errors</span>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+            Trigger Seed Crawl & Ingestion
+          </h2>
+          <button class="btn-secondary" id="refresh-frontier-btn">Refresh Stats</button>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 1rem; align-items: flex-end;">
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Seed URL(s)</label>
+            <input type="text" id="crawl-seeds-input" class="input-field" value="https://www.python.org/" placeholder="https://example.com/">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Max Pages</label>
+            <input type="number" id="crawl-max-pages" class="input-field" value="10" min="1" max="50">
+          </div>
+          <div class="form-group" style="margin-bottom: 0;">
+            <label class="form-label">Depth Limit</label>
+            <input type="number" id="crawl-depth" class="input-field" value="1" min="0" max="3">
+          </div>
+          <div>
+            <button class="btn-primary" id="start-crawl-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Enqueue & Crawl
+            </button>
+          </div>
+        </div>
+
+        <div id="crawl-log-box" style="margin-top: 1.5rem; display: none;">
+          <h4 style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Crawl Response Log:</h4>
+          <pre class="code-viewer" id="crawl-log-content"></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PAGERANK & GRAPH -->
+    <section id="pagerank-tab" class="tab-content">
+      <div class="panel-box">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20V10M18 20V4M6 20v-6"/></svg>
+            Top 20 PageRank Authority Nodes
+          </h2>
+          <button class="btn-secondary" id="refresh-pagerank-btn">Recalculate PageRank</button>
+        </div>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+          Computed over 161,408 links extracted across the crawled corpus with damping factor d=0.85 and dangling page redistribution.
+        </p>
+
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th style="width: 60px;">Rank</th>
+              <th>Document URL</th>
+              <th style="width: 140px;">PageRank Score</th>
+              <th style="width: 180px;">Visual Distribution</th>
+            </tr>
+          </thead>
+          <tbody id="pagerank-table-body">
+            <!-- Dynamic rows -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- TAB 4: CORPUS & TERMS -->
+    <section id="corpus-tab" class="tab-content">
+      <div class="dashboard-grid">
+        <div class="stat-card">
+          <span class="stat-card-title">Indexed Documents</span>
+          <span class="stat-card-value" id="corpus-total-docs">-</span>
+          <span class="stat-card-sub">Stored in SQLite</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-card-title">Unique Vocabulary Terms</span>
+          <span class="stat-card-value" id="corpus-total-terms">-</span>
+          <span class="stat-card-sub">In-Memory Inverted Index</span>
+        </div>
+      </div>
+
+      <div class="panel-box">
+        <div class="panel-header">
+          <h2 class="panel-title">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+            Corpus Raw Term Inspector
+          </h2>
+        </div>
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1.25rem;">
+          <input type="text" id="term-input" class="input-field" placeholder="Search raw term in document text (e.g. 'asyncio', 'decorator', 'syntax')...">
+          <button class="btn-primary" id="inspect-term-btn">Inspect Term</button>
+        </div>
+        <div id="term-inspect-results" style="display: none;">
+          <pre class="code-viewer" id="term-inspect-content"></pre>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast-container"></div>
+
+  <script>
+    const API_BASE = window.location.origin;
+
+    // Tab Navigation
+    document.querySelectorAll('.nav-tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.getAttribute('data-tab');
+        document.getElementById(target).classList.add('active');
+
+        if (target === 'frontier-tab') loadFrontierStats();
+        if (target === 'pagerank-tab') loadPageRank();
+        if (target === 'corpus-tab') loadCorpusStats();
+      });
+    });
+
+    // Toast helper
+    function showToast(message) {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    // Initial Health Check
+    async function checkHealth() {
+      try {
+        const res = await fetch(`${API_BASE}/`);
+        const data = await res.json();
+        document.getElementById('indexed-docs-badge').textContent = `${data.indexed_documents} Docs Indexed`;
+      } catch (err) {
+        document.getElementById('system-status').innerHTML = '<span class="status-dot" style="background:#fb7185"></span> Offline';
+      }
+    }
+    checkHealth();
+
+    // SEARCH LOGIC
+    const queryInput = document.getElementById('query-input');
+    const searchBtn = document.getElementById('search-button');
+    const resultsArea = document.getElementById('results-area');
+    const resultsContainer = document.getElementById('results-container');
+    const emptyState = document.getElementById('search-empty-state');
+    const countText = document.getElementById('results-count-text');
+    const latencyText = document.getElementById('results-latency');
+
+    async function executeSearch(query) {
+      if (!query || !query.trim()) return;
+      query = query.trim();
+      const startTime = performance.now();
+
+      searchBtn.style.opacity = '0.5';
+      try {
+        const res = await fetch(`${API_BASE}/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+        const duration = Math.round(performance.now() - startTime);
+
+        if (res.status !== 200) {
+          showToast(data.detail || 'Search error');
+          return;
+        }
+
+        renderResults(data.results, query, duration);
+      } catch (err) {
+        showToast('Failed to connect to search API: ' + err.message);
+      } finally {
+        searchBtn.style.opacity = '1';
+      }
+    }
+
+    function highlightSnippet(text, query) {
+      if (!text) return '';
+      const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 2);
+      if (!words.length) return text;
+      const regex = new RegExp(`(${words.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    function renderResults(results, query, duration) {
+      emptyState.style.display = 'none';
+      resultsArea.style.display = 'block';
+      countText.innerHTML = `Found <span>${results.length}</span> documents for "<strong>${escapeHtml(query)}</strong>"`;
+      latencyText.textContent = `Retrieved in ${duration} ms`;
+
+      if (results.length === 0) {
+        resultsContainer.innerHTML = '<div class="empty-state"><p>No documents matched your search terms. Try other keywords.</p></div>';
+        return;
+      }
+
+      resultsContainer.innerHTML = results.map((item, idx) => `
+        <article class="result-card">
+          <div class="result-header">
+            <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="result-title">
+              ${escapeHtml(item.title || item.url)}
+              <svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+            </a>
+            <span class="score-badge">Score: ${item.score}</span>
+          </div>
+          <a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer" class="result-url">
+            ${escapeHtml(item.url)}
+          </a>
+          <p class="result-snippet">${highlightSnippet(escapeHtml(item.text), query)}</p>
+          <div class="result-metrics">
+            <span class="metric-pill">Rank: <strong>#${idx + 1}</strong></span>
+            <span class="metric-pill">BM25: <strong>${item.bm25}</strong> (norm: ${item.bm25_normalized})</span>
+            <span class="metric-pill">PageRank: <strong>${item.pagerank}</strong> (norm: ${item.pagerank_normalized})</span>
+            <span class="metric-pill">Title Match: <strong>${item.title_score}</strong></span>
+            <span class="metric-pill">Phrase Match: <strong>${item.phrase_score}</strong></span>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    searchBtn.addEventListener('click', () => executeSearch(queryInput.value));
+    queryInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') executeSearch(queryInput.value);
+    });
+
+    document.querySelectorAll('.sample-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = btn.getAttribute('data-query');
+        queryInput.value = q;
+        executeSearch(q);
+      });
+    });
+
+    // CRAWLER & FRONTIER
+    async function loadFrontierStats() {
+      try {
+        const res = await fetch(`${API_BASE}/frontier/stats`);
+        const stats = await res.json();
+        document.getElementById('stat-pending').textContent = stats.pending ?? 0;
+        document.getElementById('stat-processing').textContent = stats.processing ?? 0;
+        document.getElementById('stat-crawled').textContent = stats.crawled ?? 0;
+        document.getElementById('stat-failed').textContent = stats.failed ?? 0;
+      } catch (err) {
+        showToast('Error loading frontier stats');
+      }
+    }
+    document.getElementById('refresh-frontier-btn').addEventListener('click', loadFrontierStats);
+
+    document.getElementById('start-crawl-btn').addEventListener('click', async () => {
+      const seeds = document.getElementById('crawl-seeds-input').value;
+      const maxPages = document.getElementById('crawl-max-pages').value;
+      const depth = document.getElementById('crawl-depth').value;
+      const logBox = document.getElementById('crawl-log-box');
+      const logContent = document.getElementById('crawl-log-content');
+
+      if (!seeds) {
+        showToast('Please enter at least one seed URL');
+        return;
+      }
+
+      showToast('Crawl dispatched... Processing batch.');
+      logBox.style.display = 'block';
+      logContent.textContent = 'Crawling in progress, please wait...';
+
+      try {
+        const url = `${API_BASE}/crawl-queue?seeds=${encodeURIComponent(seeds)}&max_pages=${maxPages}&max_depth=${depth}&delay=0.5`;
+        const res = await fetch(url, { method: 'POST' });
+        const result = await res.json();
+        logContent.textContent = JSON.stringify(result, null, 2);
+        showToast(`Crawl completed! ${result.new_documents} new docs added.`);
+        loadFrontierStats();
+        checkHealth();
+      } catch (err) {
+        logContent.textContent = 'Error: ' + err.message;
+        showToast('Crawl error: ' + err.message);
+      }
+    });
+
+    // PAGERANK
+    async function loadPageRank() {
+      const tbody = document.getElementById('pagerank-table-body');
+      tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; color: var(--text-faint);">Calculating PageRank graph scores...</td></tr>';
+      try {
+        const res = await fetch(`${API_BASE}/pagerank`);
+        const data = await res.json();
+        const pages = data.pages || [];
+        const maxScore = pages.length > 0 ? pages[0].pagerank : 1;
+
+        tbody.innerHTML = pages.map((p, idx) => {
+          const pct = Math.min(100, Math.round((p.pagerank / maxScore) * 100));
+          return `
+            <tr>
+              <td style="font-family: var(--font-mono); font-weight:700; color: var(--accent-cyan);">#${idx + 1}</td>
+              <td style="max-width: 480px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <a href="${escapeHtml(p.url)}" target="_blank" style="color: #fff; text-decoration:none;">${escapeHtml(p.url)}</a>
+              </td>
+              <td style="font-family: var(--font-mono); font-weight:600; color: var(--accent-emerald);">${p.pagerank}</td>
+              <td>
+                <div style="background: rgba(255,255,255,0.08); border-radius: 4px; height: 8px; overflow:hidden;">
+                  <div style="width: ${pct}%; height: 100%; background: linear-gradient(90deg, var(--accent-cyan), var(--accent-violet));"></div>
+                </div>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        tbody.innerHTML = `<tr><td colspan="4" style="color:var(--accent-rose);">Error: ${err.message}</td></tr>`;
+      }
+    }
+    document.getElementById('refresh-pagerank-btn').addEventListener('click', loadPageRank);
+
+    // CORPUS & TERMS
+    async function loadCorpusStats() {
+      try {
+        const res = await fetch(`${API_BASE}/debug/index`);
+        const data = await res.json();
+        document.getElementById('corpus-total-docs').textContent = data.total_documents;
+        document.getElementById('corpus-total-terms').textContent = data.total_terms;
+      } catch (err) {
+        showToast('Error loading index debug stats');
+      }
+    }
+
+    document.getElementById('inspect-term-btn').addEventListener('click', async () => {
+      const term = document.getElementById('term-input').value.trim();
+      if (!term) return;
+      const resBox = document.getElementById('term-inspect-results');
+      const resContent = document.getElementById('term-inspect-content');
+      resBox.style.display = 'block';
+      resContent.textContent = 'Searching documents for term...';
+
+      try {
+        const res = await fetch(`${API_BASE}/debug/term?term=${encodeURIComponent(term)}`);
+        const data = await res.json();
+        resContent.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        resContent.textContent = 'Error: ' + err.message;
+      }
+    });
+  </script>
+</body>
+</html>
